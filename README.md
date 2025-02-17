@@ -27,6 +27,58 @@ Unnecessary columns were removed, missing values handled, and date formats stand
 Created custom measures using DAX (Data Analysis Expressions) to calculate the percentage of presence, WFH, and sick leaves.
 Aggregated data based on employee attendance records to generate insights.
 
+DAX Formulas Used
+
+1️⃣ Present Days Calculation
+
+Present Days = 
+VAR Presentdays = CALCULATE(COUNT('Final Data'[Value]), 'Final Data'[Value] = "P")  
+
+RETURN Presentdays + [WFH Count]
+
+This formula counts the total number of Present (P) days from the dataset.
+It also adds Work from Home (WFH) days to get the total number of working days, considering both in-office and remote attendance.
+
+2️⃣ Presence Percentage (%)
+
+Presence % = DIVIDE([Present Days], 'Measure Table'[Total Working Days], 0)
+
+This metric calculates the percentage of days an employee was present compared to the total working days.
+The DIVIDE function ensures safe division, avoiding errors if Total Working Days = 0.
+
+3️⃣ Total Working Days Calculation
+
+Total Working Days =
+
+VAR totaldays = COUNT('Final Data'[Value])
+
+VAR nonworkdays = CALCULATE(COUNT('Final Data'[Value]), 'Final Data'[Value] IN {"WO", "HO"})
+
+RETURN totaldays - nonworkdays
+
+This formula counts the total days recorded in the dataset.
+It then excludes weekends (WO) and holidays (HO) to derive the actual total working days.
+
+4️⃣ Sick Leave (SL) Count and Percentage (%)
+
+SL Count = SUM('Final Data'[SL Count])
+
+This formula sums up all instances of sick leaves (SL Count) recorded in the dataset.
+
+SL % = DIVIDE([SL Count], [Total Working Days], 0)
+
+This calculates the percentage of sick leaves relative to the total working days.
+
+5️⃣ Work from Home (WFH) Count and Percentage (%)
+
+WFH Count = SUM('Final Data'[WFH Count])
+
+This sums up all instances of Work from Home (WFH Count) in the dataset.
+
+WFH % = DIVIDE([WFH Count], [Present Days], 0)
+
+This calculates the percentage of Work from Home days relative to Present Days.
+
 * Dashboard Elements:
 
 Employee Table: Displays individual attendance percentages (Presence, WFH, SL).
